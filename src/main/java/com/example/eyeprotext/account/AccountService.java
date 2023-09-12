@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -33,7 +34,7 @@ public class AccountService {
         return GeneralResponse.builder().message("susses").data("註冊成功").result(0).build();
     }
 
-    public void deleteAccount(Long accountId) {
+    public void deleteAccount(UUID accountId) {
         boolean exists = accountRepository.existsById(accountId);
         if (!exists) {
             throw new IllegalStateException("account with id" + accountId + "does not exists");
@@ -41,7 +42,7 @@ public class AccountService {
         accountRepository.deleteById(accountId);
     }
     @Transactional
-    public void updateAccount(Long accountId,
+    public void updateAccount(UUID accountId,
                               String name,
                               String email) {
         Account account = accountRepository.findById(accountId).orElseThrow(
@@ -62,13 +63,20 @@ public class AccountService {
     }
 
 
-    public GeneralResponse getAccountByEmailAndPassword(String email, String password) {
+    public GeneralResponse getAccountByEmailAndPassword(String email, String password, String deviceToken) {
         Optional<Account> accountByEmailAndPassword = accountRepository.findAccountByEmailAndPassword(email, password);
         if (!accountByEmailAndPassword.isPresent()) {
             return GeneralResponse.builder().message("faild").data("沒找到帳號").result(1).build();
         }
-        var id = accountByEmailAndPassword.get().getId();
+        var AccountId = accountByEmailAndPassword.get().getAccountId();
 
-        return GeneralResponse.builder().message("susses").data("有找到帳號").result(0).build();
+        // 將找到的 id 放到 account 將實體帶進來
+        Account account = accountRepository.findById(AccountId).orElseThrow(
+                () -> new IllegalStateException("account with" +  AccountId + "does not exists")
+        );
+        account.setDeviceToken(deviceToken);
+        accountRepository.save(account);
+
+        return GeneralResponse.builder().message("susses").data(deviceToken).result(0).build();
     }
 }

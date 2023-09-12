@@ -5,20 +5,26 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Configuration
 public class AccountConfig {
 
     @Bean
     CommandLineRunner commandLineRunner(AccountRepository repository) {
+
         return args -> {
             Account Gary = new Account(
-                    1L,
+                    UUID.randomUUID(),
                     "Gary",
-                    "ban103123@gmail.com",
-                    "ahri28692845",
-                    "2023-7-27"
+                    "aaa@gmail.com",
+                    "aaa",
+                    "2023-7-27",
+                    "A6CACB2EA94019A9D62AEB80D24022F7765BEB51C2400D53671831D332A77845",
+                    "未設置",
+                    new ArrayList<>()
             );
 
             repository.saveAll(
