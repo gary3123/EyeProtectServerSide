@@ -19,11 +19,11 @@ public class AccountController {
     }
 
     @PostMapping
-    public GeneralResponse getAccountByEmailAndPassword(@RequestBody Account account) {
+    public GeneralResponse LoginAccount(@RequestBody Account account) {
         String deviceToken = "AEC96811A66E9E0555BD49E7459619004C4A8D05E0511ECCFFCE9F27148987A7";
         String msgBody = "{ aps: { alert: Hello } }";
         APNsPushNotification.sendIosMsg(deviceToken, msgBody,5);
-        return accountService.getAccountByEmailAndPassword(account.getEmail(), account.getPassword(), account.getDeviceToken());
+        return accountService.LoginAccount(account.getEmail(), account.getPassword(), account.getDeviceToken());
     }
 
     @PostMapping(path = "/register")
@@ -41,5 +41,15 @@ public class AccountController {
                               @RequestParam(required = false) String name,
                               @RequestParam(required = false) String email) {
         accountService.updateAccount(accountId, name, email);
+    }
+
+    @PostMapping(path = "/uploadImage")
+    public GeneralResponse uploadImage(@RequestBody Account account) {
+        return accountService.uploadImages(account.getAccountId(), account.getImage());
+    }
+
+    @PostMapping(path = "/getAccountPersonInformation")
+    public GeneralResponse getAccountPersonInformation(@RequestBody Account account) {
+        return accountService.getAccountPersonInformation(account.getAccountId());
     }
 }

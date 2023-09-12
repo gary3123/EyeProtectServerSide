@@ -14,7 +14,6 @@ public class AccountConfig {
 
     @Bean
     CommandLineRunner commandLineRunner(AccountRepository repository) {
-
         return args -> {
             Account Gary = new Account(
                     UUID.randomUUID(),
@@ -23,7 +22,7 @@ public class AccountConfig {
                     "aaa",
                     "2023-7-27",
                     "A6CACB2EA94019A9D62AEB80D24022F7765BEB51C2400D53671831D332A77845",
-                    "未設置",
+                    "",
                     new ArrayList<>()
             );
 
