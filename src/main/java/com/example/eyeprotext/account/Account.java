@@ -25,7 +25,7 @@ public class Account {
     private String password;
     private String dor;
     private String deviceToken;
-    @Column(name = "image", length = 50000)
+    @Column(name = "image", length = 5000000)
     private String image;
     @ElementCollection
     private List<UUID> friendList;
