@@ -6,10 +6,7 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AccountService {
@@ -100,5 +97,29 @@ public class AccountService {
         );
         Hibernate.initialize(account.getFriendList());
         return GeneralResponse.builder().message("susses").data(account).result(0).build();
+    }
+
+    @Transactional
+    public GeneralResponse getFriendList(UUID accountId) {
+        Account account = accountRepository.findById(accountId).orElseThrow(
+                () -> new IllegalStateException("account with" +  accountId + "does not exists")
+        );
+        Hibernate.initialize(account.getFriendList());
+        List<UUID> friendListUUID = account.getFriendList();
+        List<FriendNameAndImage> friendNameAndImage = new ArrayList<>();
+        for(int i = 0 ; i < friendListUUID.size() ; i++) {
+            Account friendAccount = accountRepository.findById(friendListUUID.get(i)).orElseThrow(
+                    () -> new IllegalStateException("account with" +  accountId + "does not exists")
+            );
+            Hibernate.initialize(friendAccount.getFriendList());
+            FriendNameAndImage friendNameAndImageInfo = FriendNameAndImage.builder()
+                    .accountId(friendAccount.getAccountId())
+                    .name(friendAccount.getName())
+                    .image(friendAccount.getImage())
+                    .build();
+
+            friendNameAndImage.add(friendNameAndImageInfo);
+        }
+        return GeneralResponse.builder().message("susses").data(friendNameAndImage).result(0).build();
     }
 }

@@ -52,4 +52,9 @@ public class AccountController {
     public GeneralResponse getAccountPersonInformation(@RequestBody Account account) {
         return accountService.getAccountPersonInformation(account.getAccountId());
     }
+
+    @PostMapping(path = "/getFriendList")
+    public GeneralResponse getFriendList(@RequestBody Account account) {
+        return  accountService.getFriendList(account.getAccountId());
+    }
 }
