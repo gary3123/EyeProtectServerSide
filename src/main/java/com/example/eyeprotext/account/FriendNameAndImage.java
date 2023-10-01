@@ -15,6 +15,7 @@ import java.util.UUID;
 public class FriendNameAndImage {
     private UUID accountId;
     private String name;
+    private String email;
     @Column(name = "image", length = 5000000)
     private String image;
 }

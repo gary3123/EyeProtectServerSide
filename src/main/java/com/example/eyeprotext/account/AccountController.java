@@ -20,9 +20,9 @@ public class AccountController {
 
     @PostMapping
     public GeneralResponse LoginAccount(@RequestBody Account account) {
-        String deviceToken = "AEC96811A66E9E0555BD49E7459619004C4A8D05E0511ECCFFCE9F27148987A7";
-        String msgBody = "{ aps: { alert: Hello } }";
-        APNsPushNotification.sendIosMsg(deviceToken, msgBody,5);
+//        String deviceToken = "AEC96811A66E9E0555BD49E7459619004C4A8D05E0511ECCFFCE9F27148987A7";
+//        String msgBody = "{ aps: { alert: Hello } }";
+//        APNsPushNotification.sendIosMsg(deviceToken, msgBody,5);
         return accountService.LoginAccount(account.getEmail(), account.getPassword(), account.getDeviceToken());
     }
 

@@ -1,6 +1,7 @@
 package com.example.eyeprotext.account;
 
 import com.example.eyeprotext.GeneralResponse;
+import com.example.eyeprotext.news.News;
 import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,15 @@ public class AccountService {
     public GeneralResponse LoginAccount(String email, String password, String deviceToken) {
         Optional<Account> accountByEmailAndPassword = accountRepository.findAccountByEmailAndPassword(email, password);
         if (!accountByEmailAndPassword.isPresent()) {
-            return GeneralResponse.builder().message("faild").data("沒找到帳號").result(1).build();
+            Account faildAccount = new Account(UUID.randomUUID(),
+                    "",
+                   "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    new ArrayList<>());
+            return GeneralResponse.builder().message("faild").data(faildAccount).result(1).build();
         }
         var accountId = accountByEmailAndPassword.get().getAccountId();
 
@@ -115,6 +124,7 @@ public class AccountService {
             FriendNameAndImage friendNameAndImageInfo = FriendNameAndImage.builder()
                     .accountId(friendAccount.getAccountId())
                     .name(friendAccount.getName())
+                    .email(friendAccount.getEmail())
                     .image(friendAccount.getImage())
                     .build();
 

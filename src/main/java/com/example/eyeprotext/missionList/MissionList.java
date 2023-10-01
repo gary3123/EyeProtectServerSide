@@ -1,4 +1,4 @@
-package com.example.eyeprotext.missionCompleteCount;
+package com.example.eyeprotext.missionList;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,13 +13,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "missionComplete")
-public class MissionCompleteCount {
+@Table(name = "missionList")
+public class MissionList {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID missionCompleteID;
     private UUID missionID;
-    private UUID accountId;
     private String title;
-    private String date;
+    private Integer progress;
+    private String progressType;
 }
+
