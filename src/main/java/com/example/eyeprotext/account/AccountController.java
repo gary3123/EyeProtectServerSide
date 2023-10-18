@@ -3,6 +3,9 @@ package com.example.eyeprotext.account;
 import com.example.eyeprotext.APNsPushy.APNsPushNotification;
 import com.example.eyeprotext.GeneralResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -19,17 +22,22 @@ public class AccountController {
     }
 
     @PostMapping
-    public GeneralResponse LoginAccount(@RequestBody Account account) {
-//        String deviceToken = "AEC96811A66E9E0555BD49E7459619004C4A8D05E0511ECCFFCE9F27148987A7";
-//        String msgBody = "{ aps: { alert: Hello } }";
-//        APNsPushNotification.sendIosMsg(deviceToken, msgBody,5);
-        return accountService.LoginAccount(account.getEmail(), account.getPassword(), account.getDeviceToken());
+    public ResponseEntity<AuthenticationResponse> LoginAccount(@RequestBody Account account) {
+        String deviceToken = "AEC96811A66E9E0555BD49E7459619004C4A8D05E0511ECCFFCE9F27148987A7";
+        String msgBody = "{ aps: { alert: Hello } }";
+        APNsPushNotification.sendIosMsg(deviceToken, msgBody,5);
+        return ResponseEntity.ok(accountService.loginAccount(account));
     }
 
     @PostMapping(path = "/register")
     public GeneralResponse registerNewAccount(@RequestBody Account account) {
         return accountService.addNewAccount(account);
     }
+
+//    @PostMapping(path = "/register")
+//    public GeneralResponse registerNewAccount(@RequestBody Account account) {
+//        return accountService.addNewAccount(account);
+//    }
 
     @DeleteMapping(path = "{accountId}")
     public void deleteAccount(@PathVariable("accountId") UUID accountId) {
