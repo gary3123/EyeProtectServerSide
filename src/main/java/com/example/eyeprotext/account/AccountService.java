@@ -61,6 +61,8 @@ public class AccountService {
                 )
         );
         var targetAccount = accountRepository.findAccountByEmail(account.getEmail()).orElseThrow();
+        targetAccount.setDeviceToken(account.getDeviceToken());
+        accountRepository.save(targetAccount);
         var jwtToken = jwtService.generateToken(account);
         return AuthenticationResponse.builder().data(targetAccount).token(jwtToken).message("登入成功").build();
     }
@@ -180,5 +182,16 @@ public class AccountService {
     }
 
 
-
+    public GeneralResponse logout(UUID accountId) {
+        Optional<Account> account =
+                accountRepository.findById(accountId);
+        if(!account.isPresent()) {
+            return GeneralResponse.builder().message("susses").data("沒有找到此帳號").result(0).build();
+        } else {
+            Account targetAccount = accountRepository.findById(accountId).orElseThrow();
+            targetAccount.setDeviceToken("");
+            accountRepository.save(targetAccount);
+            return GeneralResponse.builder().message("susses").data("登出成功").result(0).build();
+        }
+    }
 }

@@ -65,4 +65,9 @@ public class AccountController {
     public GeneralResponse getFriendList(@RequestBody Account account) {
         return  accountService.getFriendList(account.getAccountId());
     }
+
+    @PostMapping(path = "/logout")
+    public GeneralResponse logout(@RequestBody Account account) {
+        return accountService.logout(account.getAccountId());
+    }
 }
