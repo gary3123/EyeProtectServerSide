@@ -60,8 +60,7 @@ public class APNsPushNotification {
         SimpleApnsPushNotification msg = new SimpleApnsPushNotification(deviceToken, topic, payload, instant, priority, pushType);
         // 开始推送
         PushNotificationFuture<SimpleApnsPushNotification, PushNotificationResponse<SimpleApnsPushNotification>> future = getAPNSConnect().sendNotification(msg);
-        PushNotificationResponse<SimpleApnsPushNotification> response = future.get();
-        return response;
+        return future.get();
     }
 
     public static ApnsClient getAPNSConnect() {
@@ -101,6 +100,7 @@ public class APNsPushNotification {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Ios Send Msg Fail{}",e.getMessage());
+            sendIosMsg(deviceToken, msgBody, badge);
             return;
         }
 
@@ -108,4 +108,5 @@ public class APNsPushNotification {
         // 如果返回的消息中success为true那么成功，否则失败！
         log.info("如果返回的消息中success为true那么成功，否则失败！{}", JSON.toJSONString(response));
     }
+
 }

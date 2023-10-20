@@ -37,6 +37,10 @@ public class Account implements UserDetails {
     @ElementCollection
     private List<UUID> friendList;
 
+    @ElementCollection
+    private List<UUID> friendInvites;
+
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

@@ -1,19 +1,17 @@
 package com.example.eyeprotext.account;
 
+import com.example.eyeprotext.APNsPushy.APNsPushNotification;
 import com.example.eyeprotext.GeneralResponse;
+import com.example.eyeprotext.account.response.AddFriendInviteRequest;
 import com.example.eyeprotext.account.response.GetAccountPersonInformationResponse;
 import com.example.eyeprotext.config.JwtService;
-import com.example.eyeprotext.missionList.MissionListRepository;
-import com.example.eyeprotext.news.News;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.example.eyeprotext.config.ApplicationConfig;
 
 import java.util.*;
 
@@ -166,7 +164,7 @@ public class AccountService {
         List<FriendNameAndImage> friendNameAndImage = new ArrayList<>();
         for(int i = 0 ; i < friendListUUID.size() ; i++) {
             Account friendAccount = accountRepository.findById(friendListUUID.get(i)).orElseThrow(
-                    () -> new IllegalStateException("account with" +  accountId + "does not exists")
+                    () -> new IllegalStateException("account with" + accountId + "does not exists")
             );
             Hibernate.initialize(friendAccount.getFriendList());
             FriendNameAndImage friendNameAndImageInfo = FriendNameAndImage.builder()
@@ -192,6 +190,37 @@ public class AccountService {
             targetAccount.setDeviceToken("");
             accountRepository.save(targetAccount);
             return GeneralResponse.builder().message("susses").data("登出成功").result(0).build();
+        }
+    }
+
+    public GeneralResponse addFriendInvite(AddFriendInviteRequest request) {
+        Optional<Account> account =
+                accountRepository.findById(request.getAccountId());
+        Optional<Account> invitedAccount =
+                accountRepository.findAccountByNameAndEmail(request.getName(), request.getEmail());
+        if(!account.isPresent() && !invitedAccount.isPresent()) {
+            return GeneralResponse.builder().message("susses").data("沒有找到邀請者和被邀請者帳號").result(0).build();
+        } else if (!account.isPresent()) {
+            return GeneralResponse.builder().message("susses").data("沒有找到邀請者帳號").result(0).build();
+        } else if (!invitedAccount.isPresent()) {
+            return GeneralResponse.builder().message("susses").data("沒有找到被邀請者帳號").result(0).build();
+        } else {
+            Account targetAccount = accountRepository.findAccountByNameAndEmail(request.getName(), request.getEmail()).orElseThrow();
+            Account sendInviteAccount = accountRepository.findById(request.getAccountId()).orElseThrow();
+            if (!targetAccount.getFriendInvites().contains(sendInviteAccount.getAccountId()) && !sendInviteAccount.getFriendInvites().contains(targetAccount.getAccountId())) {
+                targetAccount.getFriendInvites().add(request.getAccountId());
+                accountRepository.save(targetAccount);
+            } else {
+                if (sendInviteAccount.getFriendInvites().contains(targetAccount.getAccountId())) {
+                    return GeneralResponse.builder().message("susses").data("對方已寄邀請給你").result(0).build();
+                }
+            }
+
+            String deviceToken = targetAccount.getDeviceToken();
+            String msgBody = sendInviteAccount.getName() + "傳送了好友邀請給你！";
+            APNsPushNotification.sendIosMsg(deviceToken, msgBody,5);
+
+            return GeneralResponse.builder().message("susses").data("寄送邀請成功").result(0).build();
         }
     }
 }

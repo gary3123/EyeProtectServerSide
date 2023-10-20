@@ -2,6 +2,7 @@ package com.example.eyeprotext.account;
 
 import com.example.eyeprotext.APNsPushy.APNsPushNotification;
 import com.example.eyeprotext.GeneralResponse;
+import com.example.eyeprotext.account.response.AddFriendInviteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,9 +24,6 @@ public class AccountController {
 
     @PostMapping
     public ResponseEntity<AuthenticationResponse> LoginAccount(@RequestBody Account account) {
-        String deviceToken = "AEC96811A66E9E0555BD49E7459619004C4A8D05E0511ECCFFCE9F27148987A7";
-        String msgBody = "{ aps: { alert: Hello } }";
-        APNsPushNotification.sendIosMsg(deviceToken, msgBody,5);
         return ResponseEntity.ok(accountService.loginAccount(account));
     }
 
@@ -63,11 +61,17 @@ public class AccountController {
 
     @PostMapping(path = "/getFriendList")
     public GeneralResponse getFriendList(@RequestBody Account account) {
+
         return  accountService.getFriendList(account.getAccountId());
     }
 
     @PostMapping(path = "/logout")
     public GeneralResponse logout(@RequestBody Account account) {
         return accountService.logout(account.getAccountId());
+    }
+
+    @PostMapping(path = "/addFriendInvite")
+    public GeneralResponse addFriendInvite(@RequestBody AddFriendInviteRequest request) {
+        return  accountService.addFriendInvite(request);
     }
 }
