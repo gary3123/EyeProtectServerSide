@@ -1,12 +1,9 @@
 package com.example.eyeprotext.account;
 
-import com.example.eyeprotext.APNsPushy.APNsPushNotification;
 import com.example.eyeprotext.GeneralResponse;
-import com.example.eyeprotext.account.response.AddFriendInviteRequest;
+import com.example.eyeprotext.account.request.AddFriendInviteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -72,6 +69,11 @@ public class AccountController {
 
     @PostMapping(path = "/addFriendInvite")
     public GeneralResponse addFriendInvite(@RequestBody AddFriendInviteRequest request) {
-        return  accountService.addFriendInvite(request);
+        return accountService.addFriendInvite(request);
+    }
+
+    @PostMapping(path = "/getFriendInviteList")
+    public GeneralResponse getFriendInviteList(@RequestBody Account account) {
+        return accountService.getFriendInviteList(account);
     }
 }

@@ -2,8 +2,10 @@ package com.example.eyeprotext.account;
 
 import com.example.eyeprotext.APNsPushy.APNsPushNotification;
 import com.example.eyeprotext.GeneralResponse;
-import com.example.eyeprotext.account.response.AddFriendInviteRequest;
+import com.example.eyeprotext.account.request.AddFriendInviteRequest;
+import com.example.eyeprotext.account.response.FriendInviteInfo;
 import com.example.eyeprotext.account.response.GetAccountPersonInformationResponse;
+import com.example.eyeprotext.account.response.GetFriendInviteListResponse;
 import com.example.eyeprotext.config.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -221,6 +223,29 @@ public class AccountService {
             APNsPushNotification.sendIosMsg(deviceToken, msgBody,5);
 
             return GeneralResponse.builder().message("susses").data("寄送邀請成功").result(0).build();
+        }
+    }
+
+    public GeneralResponse getFriendInviteList(Account account) {
+        Optional<Account> isExistAccount = accountRepository.findById(account.getAccountId());
+        if (!isExistAccount.isPresent()) {
+            GetFriendInviteListResponse response = new GetFriendInviteListResponse(new ArrayList<>());
+            return GeneralResponse.builder().message("沒有此帳號ID").data(response).result(0).build();
+        }
+
+        Account targetAccount = accountRepository.findById(account.getAccountId()).orElseThrow();
+        if (targetAccount.getFriendInvites().isEmpty()) {
+            GetFriendInviteListResponse response = new GetFriendInviteListResponse(new ArrayList<>());
+            return GeneralResponse.builder().message("此帳號目前沒有好友邀請").data(response).result(0).build();
+        } else {
+            GetFriendInviteListResponse response = new GetFriendInviteListResponse(new ArrayList<>());
+            for (UUID friendInviteSenderID: targetAccount.getFriendInvites()) {
+                Account inviteAccount = accountRepository.findById(friendInviteSenderID).orElseThrow();
+                FriendInviteInfo friendInviteInfoItem =  new FriendInviteInfo(inviteAccount.getAccountId(), inviteAccount.getName(), inviteAccount.getEmail(), inviteAccount.getImage());
+                response.friendinviteInfo.add(friendInviteInfoItem);
+            }
+
+            return GeneralResponse.builder().message("此帳號目前有好友邀請").data(response).result(0).build();
         }
     }
 }

@@ -4,13 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.UUID;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class AddFriendInviteRequest {
-    private UUID accountId;
-    private String name;
-    private  String email;
+public class GetFriendInviteListResponse {
+    public List<FriendInviteInfo> friendinviteInfo;
 }
