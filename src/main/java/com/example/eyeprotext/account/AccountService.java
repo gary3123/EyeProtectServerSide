@@ -3,6 +3,7 @@ package com.example.eyeprotext.account;
 import com.example.eyeprotext.APNsPushy.APNsPushNotification;
 import com.example.eyeprotext.GeneralResponse;
 import com.example.eyeprotext.account.request.AddFriendInviteRequest;
+import com.example.eyeprotext.account.request.AcceptOrRejectFriendRequest;
 import com.example.eyeprotext.account.response.FriendInviteInfo;
 import com.example.eyeprotext.account.response.GetAccountPersonInformationResponse;
 import com.example.eyeprotext.account.response.GetFriendInviteListResponse;
@@ -209,7 +210,9 @@ public class AccountService {
         } else {
             Account targetAccount = accountRepository.findAccountByNameAndEmail(request.getName(), request.getEmail()).orElseThrow();
             Account sendInviteAccount = accountRepository.findById(request.getAccountId()).orElseThrow();
-            if (!targetAccount.getFriendInvites().contains(sendInviteAccount.getAccountId()) && !sendInviteAccount.getFriendInvites().contains(targetAccount.getAccountId())) {
+            if (targetAccount.getFriendList().contains(sendInviteAccount.getAccountId())) {
+                return GeneralResponse.builder().message("susses").data("你和對方已經是好友").result(0).build();
+            } else if (!targetAccount.getFriendInvites().contains(sendInviteAccount.getAccountId()) && !sendInviteAccount.getFriendInvites().contains(targetAccount.getAccountId())) {
                 targetAccount.getFriendInvites().add(request.getAccountId());
                 accountRepository.save(targetAccount);
             } else {
@@ -247,5 +250,59 @@ public class AccountService {
 
             return GeneralResponse.builder().message("此帳號目前有好友邀請").data(response).result(0).build();
         }
+    }
+
+    public GeneralResponse addFriend(AcceptOrRejectFriendRequest request) {
+        Optional<Account> isExistReciveAccount = accountRepository.findById(request.getReciveAccountId());
+        Optional<Account> isExistAendAccount = accountRepository.findById(request.getSendAccountId());
+        if (!isExistReciveAccount.isPresent()) {
+            return GeneralResponse.builder().message("沒有找到寄出邀請的帳號ID").data("").result(0).build();
+        }
+        if (!isExistAendAccount.isPresent()) {
+            return GeneralResponse.builder().message("沒有找到接受邀請的帳號ID").data("").result(0).build();
+        }
+
+        Account reciveAccount = accountRepository.findById(request.getReciveAccountId()).orElseThrow();
+        Account sendAccount = accountRepository.findById(request.getSendAccountId()).orElseThrow();
+
+        if(reciveAccount.getFriendInvites().contains(sendAccount)) {
+            return GeneralResponse.builder().message("沒有在好友邀請中找到帳號ID").data("").result(0).build();
+        }
+
+        if(reciveAccount.getFriendList().contains(sendAccount.getAccountId())) {
+            return GeneralResponse.builder().message("你和對方已經是好友了").data("").result(0).build();
+        }
+
+        reciveAccount.getFriendList().add(sendAccount.getAccountId());
+        sendAccount.getFriendList().add(reciveAccount.getAccountId());
+        reciveAccount.getFriendInvites().remove(sendAccount.getAccountId());
+        accountRepository.save(sendAccount);
+        accountRepository.save(reciveAccount);
+        String deviceToken = sendAccount.getDeviceToken();
+        String msgBody = reciveAccount.getName() + "和你成為朋友了！";
+        APNsPushNotification.sendIosMsg(deviceToken, msgBody,5);
+        return GeneralResponse.builder().message("新增好友成功").data("").result(0).build();
+    }
+
+    public GeneralResponse rejectFriendInvite(AcceptOrRejectFriendRequest request) {
+        Optional<Account> isExistReciveAccount = accountRepository.findById(request.getReciveAccountId());
+        Optional<Account> isExistAendAccount = accountRepository.findById(request.getSendAccountId());
+        if (!isExistReciveAccount.isPresent()) {
+            return GeneralResponse.builder().message("沒有找到寄出邀請的帳號ID").data("").result(0).build();
+        }
+        if (!isExistAendAccount.isPresent()) {
+            return GeneralResponse.builder().message("沒有找到接受邀請的帳號ID").data("").result(0).build();
+        }
+
+        Account reciveAccount = accountRepository.findById(request.getReciveAccountId()).orElseThrow();
+        Account sendAccount = accountRepository.findById(request.getSendAccountId()).orElseThrow();
+
+        if(reciveAccount.getFriendInvites().contains(sendAccount)) {
+            return GeneralResponse.builder().message("沒有在好友邀請中找到帳號ID").data("").result(0).build();
+        }
+
+        reciveAccount.getFriendInvites().remove(request.getSendAccountId());
+        accountRepository.save(reciveAccount);
+        return GeneralResponse.builder().message("拒絕邀請成功").data("").result(0).build();
     }
 }
