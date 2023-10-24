@@ -12,30 +12,35 @@ public class MisssionListConfig {
 //    @Bean
 //    CommandLineRunner commandLineRunner(MissionListRepository repository) {
 //        return  args -> {
-//            MissionList first = new MissionList(
-//                    UUID.randomUUID(),
-//                    "累積進行 30 分鐘的專注模式"
-//            );
+//            MissionList first = new MissionList.MissionListBuilder()
+//                    .missionID( UUID.randomUUID())
+//                    .title("使用專注模式")
+//                    .progressType("分鐘")
+//                    .progress(30).build();
 //
-//            MissionList second = new MissionList(
-//                    UUID.randomUUID(),
-//                    "使用一次疲憊檢測"
-//            );
+//            MissionList second = new MissionList.MissionListBuilder()
+//                    .missionID( UUID.randomUUID())
+//                    .title("使用疲憊檢測")
+//                    .progressType("次")
+//                    .progress(1).build();
 //
-//            MissionList third = new MissionList(
-//                    UUID.randomUUID(),
-//                    "使用一次藍光檢測器，並低於限制值"
-//            );
+//            MissionList third = new MissionList.MissionListBuilder()
+//                    .missionID( UUID.randomUUID())
+//                    .title("使用藍光檢測器，並低於限制值")
+//                    .progressType("次")
+//                    .progress(1).build();
 //
-//            MissionList fourth = new MissionList(
-//                    UUID.randomUUID(),
-//                    "在光線充足的地方使用專注模式 1 次"
-//            );
+//            MissionList fourth = new MissionList.MissionListBuilder()
+//                    .missionID( UUID.randomUUID())
+//                    .title("在光線充足的地方使用專注模式")
+//                    .progressType("次")
+//                    .progress(1).build();
 //
-//            MissionList fifth = new MissionList(
-//                    UUID.randomUUID(),
-//                    "進行一次護眼保健操"
-//            );
+//            MissionList fifth = new MissionList.MissionListBuilder()
+//                    .missionID( UUID.randomUUID())
+//                    .title("進行護眼保健操")
+//                    .progressType("次")
+//                    .progress(1).build();
 //
 //            repository.saveAll(
 //                    List.of(first, second, third, fourth, fifth)

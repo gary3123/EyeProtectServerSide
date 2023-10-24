@@ -1,4 +1,4 @@
-package com.example.eyeprotext.concentrateRoom;
+package com.example.eyeprotext.concentrateInvite;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -13,13 +14,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "concentrateRoom")
-public class ConcentrateRoom {
+@Table(name = "inviteConcentrateRoom")
+public class InviteConcentrateRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID roomId;
+    private UUID inviteRoomId;
     private UUID sendAccountId;
-    private UUID reciveAccountId;
-    private String concentrateTime;
-    private String restTime;
+
+    @ElementCollection
+    private List<UUID> reciveAccountId;
+
+    @ElementCollection
+    private List<UUID> joinAccountId;
 }

@@ -7,7 +7,7 @@ import com.example.eyeprotext.account.request.AcceptOrRejectFriendRequest;
 import com.example.eyeprotext.account.response.FriendInviteInfo;
 import com.example.eyeprotext.account.response.GetAccountPersonInformationResponse;
 import com.example.eyeprotext.account.response.GetFriendInviteListResponse;
-import com.example.eyeprotext.config.JwtService;
+import com.example.eyeprotext.jwtConfig.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;

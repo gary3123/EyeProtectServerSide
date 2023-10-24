@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -19,7 +20,11 @@ public class ConcentrateRecord {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID recordId;
     private UUID accountId;
-    private UUID reciveAccountId;
-    private String concentrateTime;
-    private String restTime;
+    private String startTime;
+    private String endTime;
+    private Boolean isFinished;
+    private String  concentrateTime;
+    private String  restTime;
+    @ElementCollection
+    private List<UUID> withFriends;
 }
