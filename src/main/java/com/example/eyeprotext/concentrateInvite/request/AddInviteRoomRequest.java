@@ -9,9 +9,7 @@ import java.util.UUID;
 @Data
 @Builder
 @AllArgsConstructor
-public class AnserInviteRequest {
+public class AddInviteRoomRequest {
     private UUID inviteRoomId;
     private UUID reciveAccountId;
-    private Boolean anser;
-
 }

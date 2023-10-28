@@ -4,6 +4,7 @@ import com.example.eyeprotext.APNsPushy.APNsPushNotification;
 import com.example.eyeprotext.GeneralResponse;
 import com.example.eyeprotext.account.request.AddFriendInviteRequest;
 import com.example.eyeprotext.account.request.AcceptOrRejectFriendRequest;
+import com.example.eyeprotext.account.response.FindAccountResponse;
 import com.example.eyeprotext.account.response.FriendInviteInfo;
 import com.example.eyeprotext.account.response.GetAccountPersonInformationResponse;
 import com.example.eyeprotext.account.response.GetFriendInviteListResponse;
@@ -304,5 +305,18 @@ public class AccountService {
         reciveAccount.getFriendInvites().remove(request.getSendAccountId());
         accountRepository.save(reciveAccount);
         return GeneralResponse.builder().message("拒絕邀請成功").data("").result(0).build();
+    }
+
+    public GeneralResponse findAccount(UUID accountId) {
+
+        Optional<Account> isExistAccount = accountRepository.findById(accountId);
+
+        if (!isExistAccount.isPresent()) {
+            return GeneralResponse.builder().message("沒有找到接受邀請的帳號ID").data(FindAccountResponse.builder().build()).result(0).build();
+        }
+
+        Account account = accountRepository.findById(accountId).orElseThrow();
+        FindAccountResponse responseData = FindAccountResponse.builder().accountId(account.getAccountId()).name(account.getName()).image(account.getImage()).build();
+        return GeneralResponse.builder().message("加入成功").data(responseData).result(0).build();
     }
 }

@@ -14,11 +14,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Slf4j
 @Service
 @ServerEndpoint("/api/websocket/{sid}")
-public class WebSocketService{
+public class WebSocketService {
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
+
     private static CopyOnWriteArraySet<WebSocketService> webSocketSet = new CopyOnWriteArraySet<WebSocketService>();
+
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
@@ -26,18 +28,20 @@ public class WebSocketService{
     //接收sid
     private String sid = "";
 
+
     /**
      * 连接建立成功调用的方法
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("sid") String sid) {
-
         this.session = session;
         webSocketSet.add(this);     //加入set中
         this.sid = sid;
         addOnlineCount();           //在线数加1
         try {
-            sendMessage("conn_success");
+            String inviteRoomId = sid.substring(0,36);
+            String accountId = sid.substring(44,80);
+            openSendInfo(accountId + " 進來了 " + inviteRoomId + "房間", accountId, inviteRoomId);
             log.info("有新窗口开始监听:" + sid + ",当前在线人数为:" + getOnlineCount());
         } catch (IOException e) {
             log.error("websocket IO Exception");
@@ -57,6 +61,17 @@ public class WebSocketService{
         //这里写你 释放的时候，要处理的业务
         log.info("有一连接关闭！当前在线人数为" + getOnlineCount());
 
+        String inviteRoomId = sid.substring(0,36);
+        String accountId = sid.substring(44,80);
+        try {
+            if (sid.contains("HostAT")) {
+                closeSendInfo("房主" + accountId + " 離開了 " + inviteRoomId + " 房間", accountId, inviteRoomId);
+            } else {
+                closeSendInfo(accountId + " 離開了 " + inviteRoomId + " 房間", accountId, inviteRoomId);
+            }
+        } catch (IOException e) {
+            log.error("websocket IO Exception");
+        }
     }
 
     /**
@@ -96,15 +111,32 @@ public class WebSocketService{
     /**
      * 群发自定义消息
      */
-    public static void sendInfo(String message, @PathParam("sid") String sid) throws IOException {
-        log.info("推送消息到窗口" + sid + "，推送内容:" + message);
+    public static void openSendInfo(String message, @PathParam("accountId") String accountId, String inviteRoomId) throws IOException {
 
         for (WebSocketService item : webSocketSet) {
             try {
                 //这里可以设定只推送给这个sid的，为null则全部推送
-                if (sid == "d789efc5-6ce2-4af2-8c18-cc8a1dda616a") {
-//                    item.sendMessage(message);
-                } else if (item.sid.equals(sid)) {
+                if (item.sid.contains(inviteRoomId) && !item.sid.contains(accountId)) {
+                    log.info("帳號" + accountId + "，推送内容:" + message);
+                    item.sendMessage(message);
+                } else if (item.sid.equals(inviteRoomId + accountId)) {
+                    item.sendMessage(message);
+                }
+            } catch (IOException e) {
+                continue;
+            }
+        }
+    }
+
+    public static void closeSendInfo(String message, @PathParam("accountId") String accountId, String inviteRoomId) throws IOException {
+
+        for (WebSocketService item : webSocketSet) {
+            try {
+                //这里可以设定只推送给这个sid的，为null则全部推送
+                if (item.sid.contains(inviteRoomId) && !item.sid.contains(accountId)) {
+                    log.info("帳號" + accountId + "，推送内容:" + message);
+                    item.sendMessage(message);
+                } else if (item.sid.equals(inviteRoomId + accountId)) {
                     item.sendMessage(message);
                 }
             } catch (IOException e) {

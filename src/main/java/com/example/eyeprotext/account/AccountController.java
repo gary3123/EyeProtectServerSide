@@ -3,6 +3,7 @@ package com.example.eyeprotext.account;
 import com.example.eyeprotext.GeneralResponse;
 import com.example.eyeprotext.account.request.AddFriendInviteRequest;
 import com.example.eyeprotext.account.request.AcceptOrRejectFriendRequest;
+import com.example.eyeprotext.account.request.FindAccountRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -86,5 +87,10 @@ public class AccountController {
     @PostMapping(path = "/rejectFriendInvite")
     public GeneralResponse rejectFriendInvite(@RequestBody AcceptOrRejectFriendRequest request) {
         return accountService.rejectFriendInvite(request);
+    }
+
+    @PostMapping(path = "/findAccount")
+    public GeneralResponse findAccount(@RequestBody Account findAccountRequest) {
+        return accountService.findAccount(findAccountRequest.getAccountId());
     }
 }
