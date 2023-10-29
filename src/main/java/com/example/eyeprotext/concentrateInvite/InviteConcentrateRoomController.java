@@ -4,6 +4,7 @@ import com.example.eyeprotext.GeneralResponse;
 import com.example.eyeprotext.concentrateInvite.request.AddFriendToConcentrateRequest;
 import com.example.eyeprotext.concentrateInvite.request.AddInviteRoomRequest;
 import com.example.eyeprotext.concentrateInvite.request.RemoveInviteRoomRequest;
+import com.example.eyeprotext.concentrateInvite.request.StartMutipleConcentrateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,11 @@ public class InviteConcentrateRoomController {
     @PostMapping(path = "/createInviteRoom")
     public GeneralResponse creatInviteRoom(@RequestBody InviteConcentrateRoom inviteConcentrateRoom) {
         return inviteConcentrateRoomService.createInviteRoom(inviteConcentrateRoom);
+    }
+
+    @PostMapping(path = "/removeInviteRoom")
+    public GeneralResponse removeInviteRoom(@RequestBody InviteConcentrateRoom inviteConcentrateRoom) {
+        return inviteConcentrateRoomService.removeInviteRoom(inviteConcentrateRoom);
     }
 
     @PostMapping(path = "/addFriendToInviteRoom")
@@ -45,6 +51,9 @@ public class InviteConcentrateRoomController {
         return inviteConcentrateRoomService.refreshInviteRoomMemberList(inviteRoom.getInviteRoomId());
     }
 
-
+    @PostMapping(path = "/startMutipleConcentrate")
+    public GeneralResponse startMutipleConcentrate(@RequestBody StartMutipleConcentrateRequest startMutipleConcentrateRequest) {
+        return inviteConcentrateRoomService.startMutipleConcentrate(startMutipleConcentrateRequest);
+    }
 
 }

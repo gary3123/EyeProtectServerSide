@@ -81,7 +81,7 @@ public class APNsPushNotification {
                         //P12配置文件时注册密码
                         .setClientCredentials(file, p12Password)
                         //用于设置服务器与苹果服务器建立几个链接通道，这里是建立了四个，链接通道并不是越多越好的，具体百度
-                        .setConcurrentConnections(4)
+                        .setConcurrentConnections(3)
                         //的作用是建立几个线程来处理，说白了就是多线程，我这里设置的都是4，相当于16个线程同时处理。
                         .setEventLoopGroup(eventLoopGroup).build();
             } catch (Exception e) {

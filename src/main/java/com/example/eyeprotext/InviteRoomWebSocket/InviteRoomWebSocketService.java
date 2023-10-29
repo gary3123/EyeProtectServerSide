@@ -13,13 +13,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @Slf4j
 @Service
-@ServerEndpoint("/api/websocket/{sid}")
-public class WebSocketService {
+@ServerEndpoint("/api/inviteRoomWebsocket/{sid}")
+public class InviteRoomWebSocketService {
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
 
-    private static CopyOnWriteArraySet<WebSocketService> webSocketSet = new CopyOnWriteArraySet<WebSocketService>();
+    private static CopyOnWriteArraySet<InviteRoomWebSocketService> webSocketSet = new CopyOnWriteArraySet<InviteRoomWebSocketService>();
 
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
@@ -82,11 +82,19 @@ public class WebSocketService {
     public void onMessage(String message, Session session) {
         log.info("收到来自窗口" + sid + "的信息:" + message);
         //群发消息
-        for (WebSocketService item : webSocketSet) {
-            try {
-                item.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        if (message.contains("進入專注模式")) {
+            for (InviteRoomWebSocketService item : webSocketSet) {
+                try {
+                    String inviteRoomId = sid.substring(0,36);
+                    String accountId = sid.substring(44,80);
+                    if (item.sid.contains(inviteRoomId) && !item.sid.contains(accountId)) {
+                        log.info("帳號" + accountId + "，推送内容:" + message);
+                        item.sendMessage(message);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -113,7 +121,7 @@ public class WebSocketService {
      */
     public static void openSendInfo(String message, @PathParam("accountId") String accountId, String inviteRoomId) throws IOException {
 
-        for (WebSocketService item : webSocketSet) {
+        for (InviteRoomWebSocketService item : webSocketSet) {
             try {
                 //这里可以设定只推送给这个sid的，为null则全部推送
                 if (item.sid.contains(inviteRoomId) && !item.sid.contains(accountId)) {
@@ -130,7 +138,7 @@ public class WebSocketService {
 
     public static void closeSendInfo(String message, @PathParam("accountId") String accountId, String inviteRoomId) throws IOException {
 
-        for (WebSocketService item : webSocketSet) {
+        for (InviteRoomWebSocketService item : webSocketSet) {
             try {
                 //这里可以设定只推送给这个sid的，为null则全部推送
                 if (item.sid.contains(inviteRoomId) && !item.sid.contains(accountId)) {
@@ -150,14 +158,14 @@ public class WebSocketService {
     }
 
     public static synchronized void addOnlineCount() {
-        WebSocketService.onlineCount++;
+        InviteRoomWebSocketService.onlineCount++;
     }
 
     public static synchronized void subOnlineCount() {
-        WebSocketService.onlineCount--;
+        InviteRoomWebSocketService.onlineCount--;
     }
 
-    public static CopyOnWriteArraySet<WebSocketService> getWebSocketSet() {
+    public static CopyOnWriteArraySet<InviteRoomWebSocketService> getWebSocketSet() {
         return webSocketSet;
     }
 }

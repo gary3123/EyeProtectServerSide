@@ -19,7 +19,9 @@ public class ConcentrateRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID recordId;
+    private UUID inviteRoomId;
     private UUID accountId;
+    private UUID hostAccountId;
     private String startTime;
     private String endTime;
     private Boolean isFinished;
@@ -27,4 +29,5 @@ public class ConcentrateRecord {
     private String  restTime;
     @ElementCollection
     private List<UUID> withFriends;
+    private String image;
 }

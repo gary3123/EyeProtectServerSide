@@ -23,6 +23,12 @@ public class ConcentrateRecordService {
     }
 
     public GeneralResponse addConcentrateRecord(ConcentrateRecord record) {
+
+        Optional<Account> isExistHostAccountId = accountRepository.findById(record.getHostAccountId());
+        if (!isExistHostAccountId.isPresent()) {
+            return GeneralResponse.builder().message("找不到主持專注模式的 AccountId").data("").result(0).build();
+        }
+
         Optional<Account> isExistAccountId = accountRepository.findById(record.getAccountId());
         if (!isExistAccountId.isPresent()) {
             return GeneralResponse.builder().message("找不到執行專注模式的 AccountId").data("").result(0).build();
@@ -39,6 +45,7 @@ public class ConcentrateRecordService {
 
         ConcentrateRecord addConcentrateRecord = ConcentrateRecord.builder()
                 .accountId(record.getAccountId())
+                .hostAccountId(record.getHostAccountId())
                 .startTime(record.getStartTime())
                 .concentrateTime(record.getConcentrateTime())
                 .restTime(record.getRestTime())

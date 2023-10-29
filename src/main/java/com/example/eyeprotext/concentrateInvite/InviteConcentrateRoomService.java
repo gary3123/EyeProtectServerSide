@@ -5,11 +5,13 @@ import com.example.eyeprotext.GeneralResponse;
 import com.example.eyeprotext.account.Account;
 import com.example.eyeprotext.account.AccountRepository;
 import com.example.eyeprotext.account.response.FindAccountResponse;
-import com.example.eyeprotext.account.response.GetFriendInviteListResponse;
 import com.example.eyeprotext.concentrateInvite.request.AddFriendToConcentrateRequest;
 import com.example.eyeprotext.concentrateInvite.request.AddInviteRoomRequest;
 import com.example.eyeprotext.concentrateInvite.request.RemoveInviteRoomRequest;
+import com.example.eyeprotext.concentrateInvite.request.StartMutipleConcentrateRequest;
 import com.example.eyeprotext.concentrateInvite.response.RefreshInviteRoomMemberListResponse;
+import com.example.eyeprotext.concentrateRecord.ConcentrateRecord;
+import com.example.eyeprotext.concentrateRecord.ConcentrateRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ import java.util.*;
 public class InviteConcentrateRoomService {
     private final InviteConcentrateRoomRespository inviteConcentrateRoomRespository;
     private final AccountRepository accountRepository;
+    private final ConcentrateRecordRepository concentrateRecordRepository;
     private final Timer timer = new Timer();
 
     public List<InviteConcentrateRoom> getConcentrateInvite() {
@@ -113,7 +116,8 @@ public class InviteConcentrateRoomService {
     public GeneralResponse refreshInviteRoomMemberList(UUID inviteRoomId) {
         Optional<InviteConcentrateRoom> isExistInviteRoom = inviteConcentrateRoomRespository.findById(inviteRoomId);
         if (!isExistInviteRoom.isPresent()) {
-            return GeneralResponse.builder().message("找不到房間的Id").data("").result(0).build();
+            RefreshInviteRoomMemberListResponse refreshInviteRoomMemberListResponse = new RefreshInviteRoomMemberListResponse(new ArrayList<>());
+            return GeneralResponse.builder().message("找不到房間的Id").data(refreshInviteRoomMemberListResponse).result(0).build();
         }
 
         InviteConcentrateRoom targetInviteRoom = inviteConcentrateRoomRespository.findById(inviteRoomId).orElseThrow();
@@ -168,6 +172,57 @@ public class InviteConcentrateRoomService {
         inviteConcentrateRoom.getJoinAccountId().remove(removeAccount.getAccountId());
         inviteConcentrateRoomRespository.save(inviteConcentrateRoom);
         return GeneralResponse.builder().message(removeInviteRoomRequest.getRemoveAccountId() + "已離開房間").data("").result(0).build();
+    }
+
+    public GeneralResponse removeInviteRoom(InviteConcentrateRoom inviteConcentrateRoom) {
+        Optional<InviteConcentrateRoom> isExistInviteRoom = inviteConcentrateRoomRespository.findById(inviteConcentrateRoom.getInviteRoomId());
+        if (!isExistInviteRoom.isPresent()) {
+            return GeneralResponse.builder().message("找不到房間的Id").data("").result(0).build();
+        }
+        inviteConcentrateRoomRespository.deleteById(inviteConcentrateRoom.getInviteRoomId());
+
+        return GeneralResponse.builder().message(inviteConcentrateRoom.getInviteRoomId().toString() + " 刪除成功").data("").result(0).build();
+    }
+
+    public GeneralResponse startMutipleConcentrate(StartMutipleConcentrateRequest startMutipleConcentrateRequest) {
+        Optional<InviteConcentrateRoom> isExistInviteRoom = inviteConcentrateRoomRespository.findById(startMutipleConcentrateRequest.getInviteRoomId());
+        if (!isExistInviteRoom.isPresent()) {
+            return GeneralResponse.builder().message("找不到房間的Id").data("").result(0).build();
+        }
+
+        InviteConcentrateRoom targetInviteRoom = inviteConcentrateRoomRespository.findById(startMutipleConcentrateRequest.getInviteRoomId()).orElseThrow();
+        for (int i = 0; i < targetInviteRoom.getJoinAccountId().size(); i++) {
+            List<UUID> friendList = new ArrayList<>(targetInviteRoom.getJoinAccountId()); // 創建新的 friendList，複製 joinAccountId
+
+            // 從 friendList 中刪除當前 accountId
+            friendList.remove(targetInviteRoom.getJoinAccountId().get(i));
+
+            ConcentrateRecord concentrateRecord = ConcentrateRecord.builder()
+                    .concentrateTime(startMutipleConcentrateRequest.getConcentrateTime())
+                    .inviteRoomId(startMutipleConcentrateRequest.getInviteRoomId())
+                    .hostAccountId(targetInviteRoom.getSendAccountId())
+                    .isFinished(false)
+                    .startTime(startMutipleConcentrateRequest.getStartTime())
+                    .accountId(targetInviteRoom.getJoinAccountId().get(i))
+                    .restTime(startMutipleConcentrateRequest.getRestTime())
+                    .withFriends(new ArrayList<>(friendList)) // 使用新的 friendList
+                    .build();
+            concentrateRecordRepository.save(concentrateRecord);
+        }
+
+        ConcentrateRecord hostConcentrateRecord = ConcentrateRecord.builder()
+                .concentrateTime(startMutipleConcentrateRequest.getConcentrateTime())
+                .inviteRoomId(startMutipleConcentrateRequest.getInviteRoomId())
+                .hostAccountId(targetInviteRoom.getSendAccountId())
+                .isFinished(false)
+                .startTime(startMutipleConcentrateRequest.getStartTime())
+                .accountId(targetInviteRoom.getSendAccountId())
+                .restTime(startMutipleConcentrateRequest.getRestTime())
+                .withFriends(targetInviteRoom.getJoinAccountId())
+                .build();
+        concentrateRecordRepository.save(hostConcentrateRecord);
+
+        return GeneralResponse.builder().message("進入專注模式成功").data("").result(0).build();
     }
 
 
