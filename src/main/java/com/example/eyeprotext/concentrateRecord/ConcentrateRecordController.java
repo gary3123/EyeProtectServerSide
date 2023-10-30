@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
+
 @RestController
 @RequestMapping(path = "api/concentrateRecord")
 public class ConcentrateRecordController {
@@ -33,4 +35,8 @@ public class ConcentrateRecordController {
         return concentrateRecordService.completeConcentrateRecord(record);
     }
 
+    @PostMapping(path = "/findByInviteRoomIdForConcentrateAndRestTime")
+    public GeneralResponse findByInviteRoomIdForConcentrateAndRestTime(@RequestBody ConcentrateRecord record) {
+        return concentrateRecordService.findByInviteRoomIdForConcentrateAndRestTime(record);
+    }
 }

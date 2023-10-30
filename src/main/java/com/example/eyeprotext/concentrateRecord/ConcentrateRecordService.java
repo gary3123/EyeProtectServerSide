@@ -4,6 +4,7 @@ import com.example.eyeprotext.GeneralResponse;
 import com.example.eyeprotext.account.Account;
 import com.example.eyeprotext.account.AccountRepository;
 import com.example.eyeprotext.account.FriendNameAndImage;
+import com.example.eyeprotext.concentrateRecord.response.FindByInviteRoomIdForConcentrateAndRestTimeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -80,5 +81,17 @@ public class ConcentrateRecordService {
         targetRecord.setEndTime(record.getEndTime());
         concentrateRecordRepository.save(targetRecord);
         return GeneralResponse.builder().message("已更新紀錄").data("").result(0).build();
+    }
+
+    public GeneralResponse findByInviteRoomIdForConcentrateAndRestTime(ConcentrateRecord record) {
+        List<ConcentrateRecord> isExistedRecords = concentrateRecordRepository.findConcentrateRecordByInviteRoomId(record.getInviteRoomId());
+        if (isExistedRecords.isEmpty()) {
+            FindByInviteRoomIdForConcentrateAndRestTimeResponse response = FindByInviteRoomIdForConcentrateAndRestTimeResponse.builder().build();
+            return GeneralResponse.builder().message("未找到 inviteRoomId 相關的紀錄").data(response).result(0).build();
+        }
+        ConcentrateRecord targetConcentrateRecord = isExistedRecords.get(0);
+
+        FindByInviteRoomIdForConcentrateAndRestTimeResponse response = FindByInviteRoomIdForConcentrateAndRestTimeResponse.builder().concentrateTime(targetConcentrateRecord.getConcentrateTime()).restTime(targetConcentrateRecord.getRestTime()).build();
+        return GeneralResponse.builder().message("找到相關紀錄了").data(response).result(0).build();
     }
 }

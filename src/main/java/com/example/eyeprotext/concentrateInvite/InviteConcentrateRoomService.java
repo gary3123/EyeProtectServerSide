@@ -210,6 +210,12 @@ public class InviteConcentrateRoomService {
             concentrateRecordRepository.save(concentrateRecord);
         }
 
+
+        List<UUID> hostFriendList = new ArrayList<>(targetInviteRoom.getJoinAccountId());
+        for (int i = 0;i <  targetInviteRoom.getJoinAccountId().size(); i++) {
+            hostFriendList.add(targetInviteRoom.getJoinAccountId().get(i));
+        }
+
         ConcentrateRecord hostConcentrateRecord = ConcentrateRecord.builder()
                 .concentrateTime(startMutipleConcentrateRequest.getConcentrateTime())
                 .inviteRoomId(startMutipleConcentrateRequest.getInviteRoomId())
@@ -218,7 +224,7 @@ public class InviteConcentrateRoomService {
                 .startTime(startMutipleConcentrateRequest.getStartTime())
                 .accountId(targetInviteRoom.getSendAccountId())
                 .restTime(startMutipleConcentrateRequest.getRestTime())
-                .withFriends(targetInviteRoom.getJoinAccountId())
+                .withFriends(hostFriendList)
                 .build();
         concentrateRecordRepository.save(hostConcentrateRecord);
 
