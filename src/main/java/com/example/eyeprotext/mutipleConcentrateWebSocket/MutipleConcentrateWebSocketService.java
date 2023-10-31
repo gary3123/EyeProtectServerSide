@@ -77,6 +77,8 @@ public class MutipleConcentrateWebSocketService {
         }
     }
 
+
+
     /**
      * 收到客户端消息后调用的方法
      * @ Param message 客户端发送过来的消息
@@ -142,6 +144,22 @@ public class MutipleConcentrateWebSocketService {
                         }
                     }
                     break;
+                }
+            }
+        }
+
+        if (message.contains("已完成專注模式")) {
+            for (MutipleConcentrateWebSocketService item : webSocketSet) {
+                try {
+                    //这里可以设定只推送给这个sid的，为null则全部推送
+                    if (item.sid.contains(inviteRoomId) && !item.sid.contains(accountId)) {
+                        log.info("帳號" + accountId + "，推送内容:" + message);
+                        item.sendMessage(message);
+                    } else if (item.sid.equals(inviteRoomId + accountId)) {
+                        item.sendMessage(message);
+                    }
+                } catch (IOException e) {
+                    continue;
                 }
             }
         }
