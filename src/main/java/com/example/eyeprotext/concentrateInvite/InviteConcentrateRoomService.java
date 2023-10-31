@@ -206,12 +206,14 @@ public class InviteConcentrateRoomService {
                     .accountId(targetInviteRoom.getJoinAccountId().get(i))
                     .restTime(startMutipleConcentrateRequest.getRestTime())
                     .withFriends(new ArrayList<>(friendList)) // 使用新的 friendList
+                    .image("未上傳")
+                    .description("")
                     .build();
             concentrateRecordRepository.save(concentrateRecord);
         }
 
 
-        List<UUID> hostFriendList = new ArrayList<>(targetInviteRoom.getJoinAccountId());
+        List<UUID> hostFriendList = new ArrayList<>();
         for (int i = 0;i <  targetInviteRoom.getJoinAccountId().size(); i++) {
             hostFriendList.add(targetInviteRoom.getJoinAccountId().get(i));
         }
@@ -225,6 +227,8 @@ public class InviteConcentrateRoomService {
                 .accountId(targetInviteRoom.getSendAccountId())
                 .restTime(startMutipleConcentrateRequest.getRestTime())
                 .withFriends(hostFriendList)
+                .image("未上傳")
+                .description("")
                 .build();
         concentrateRecordRepository.save(hostConcentrateRecord);
 

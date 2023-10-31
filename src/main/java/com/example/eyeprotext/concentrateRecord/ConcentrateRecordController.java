@@ -1,14 +1,13 @@
 package com.example.eyeprotext.concentrateRecord;
 
 import com.example.eyeprotext.GeneralResponse;
-import com.example.eyeprotext.account.AccountService;
+import com.example.eyeprotext.concentrateRecord.request.UploadAlongRecordImageRequest;
+import com.example.eyeprotext.concentrateRecord.request.completeMutipleConcentrateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.nio.file.Path;
 
 @RestController
 @RequestMapping(path = "api/concentrateRecord")
@@ -38,5 +37,15 @@ public class ConcentrateRecordController {
     @PostMapping(path = "/findByInviteRoomIdForConcentrateAndRestTime")
     public GeneralResponse findByInviteRoomIdForConcentrateAndRestTime(@RequestBody ConcentrateRecord record) {
         return concentrateRecordService.findByInviteRoomIdForConcentrateAndRestTime(record);
+    }
+
+    @PostMapping(path = "/completeMutipleConcentrate")
+    public GeneralResponse completeMutipleConcentrate(@RequestBody completeMutipleConcentrateRequest request) {
+        return concentrateRecordService.completeMutipleConcentrate(request);
+    }
+
+    @PostMapping(path = "/uploadAlongRecordImage")
+    public GeneralResponse uploadAlongRecordImage(@RequestBody UploadAlongRecordImageRequest request) {
+        return concentrateRecordService.uploadAlongRecordImage(request);
     }
 }

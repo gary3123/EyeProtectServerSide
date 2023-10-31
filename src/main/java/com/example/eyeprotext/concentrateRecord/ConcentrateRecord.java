@@ -27,7 +27,12 @@ public class ConcentrateRecord {
     private Boolean isFinished;
     private String  concentrateTime;
     private String  restTime;
+
     @ElementCollection
     private List<UUID> withFriends;
+
+    @Column(name = "image", length = 5000000)
     private String image;
+
+    private String description;
 }
