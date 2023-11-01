@@ -5,6 +5,7 @@ import com.example.eyeprotext.account.Account;
 import com.example.eyeprotext.account.AccountRepository;
 import com.example.eyeprotext.account.FriendNameAndImage;
 import com.example.eyeprotext.concentrateRecord.request.UploadAlongRecordImageRequest;
+import com.example.eyeprotext.concentrateRecord.request.UploadMtipleRecordImageRequest;
 import com.example.eyeprotext.concentrateRecord.request.completeMutipleConcentrateRequest;
 import com.example.eyeprotext.concentrateRecord.response.FindByInviteRoomIdForConcentrateAndRestTimeResponse;
 import lombok.RequiredArgsConstructor;
@@ -118,6 +119,18 @@ public class ConcentrateRecordService {
         Optional<ConcentrateRecord> isExistConcentrateRecord = concentrateRecordRepository.findById(request.getRecordId());
         if (!isExistConcentrateRecord.isPresent()) {
             return GeneralResponse.builder().message("沒有找到對應的 recordId").data("").result(0).build();
+        }
+        ConcentrateRecord concentrateRecord = isExistConcentrateRecord.get();
+        concentrateRecord.setImage(request.getImage());
+        concentrateRecord.setDescription(request.getDescription());
+        concentrateRecordRepository.save(concentrateRecord);
+        return GeneralResponse.builder().message("更新成功").data("").result(0).build();
+    }
+
+    public GeneralResponse uploadMtipleRecordImage(UploadMtipleRecordImageRequest request) {
+        Optional<ConcentrateRecord> isExistConcentrateRecord = concentrateRecordRepository.findConcentrateRecordByInviteRoomIdAndAccountId(request.getInviteRoomId(), request.getAccountId());
+        if (!isExistConcentrateRecord.isPresent()) {
+            return GeneralResponse.builder().message("沒有找到對應的 inviteRoomId 和 accountId").data("").result(0).build();
         }
         ConcentrateRecord concentrateRecord = isExistConcentrateRecord.get();
         concentrateRecord.setImage(request.getImage());

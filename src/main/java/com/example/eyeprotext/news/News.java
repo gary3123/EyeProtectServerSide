@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -19,13 +20,14 @@ public class News {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID newsId;
 
-    private UUID reciveAccountId;
-
     private UUID sendAccountId;
 
-    private  String time;
+    private String title;
 
+    @Column(name = "image", length = 5000000)
+    private String image;
 
+    private String description;
 
-
+    private String time;
 }
