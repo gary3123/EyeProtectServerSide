@@ -3,6 +3,7 @@ package com.example.eyeprotext.concentrateRecord;
 import com.example.eyeprotext.GeneralResponse;
 import com.example.eyeprotext.concentrateRecord.request.UploadAlongRecordImageRequest;
 import com.example.eyeprotext.concentrateRecord.request.UploadMtipleRecordImageRequest;
+import com.example.eyeprotext.concentrateRecord.request.UseInviteRoomIdAndAccountIdTofindConcentrateRecordIdRequest;
 import com.example.eyeprotext.concentrateRecord.request.completeMutipleConcentrateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,5 +54,10 @@ public class ConcentrateRecordController {
     @PostMapping(path = "/uploadMtipleRecordImage")
     public GeneralResponse uploadMtipleRecordImage(@RequestBody UploadMtipleRecordImageRequest request) {
         return concentrateRecordService.uploadMtipleRecordImage(request);
+    }
+
+    @PostMapping(path = "/useInviteRoomIdAndAccountIdTofindConcentrateRecordId")
+    public GeneralResponse useInviteRoomIdAndAccountIdTofindConcentrateRecordId(@RequestBody UseInviteRoomIdAndAccountIdTofindConcentrateRecordIdRequest request) {
+        return concentrateRecordService.useInviteRoomIdAndAccountIdTofindConcentrateRecordId(request);
     }
 }
