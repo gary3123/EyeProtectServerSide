@@ -8,6 +8,7 @@ import com.example.eyeprotext.concentrateRecord.ConcentrateRecordRepository;
 import com.example.eyeprotext.news.Request.AddConcentrateToNewsRequest;
 import com.example.eyeprotext.news.Request.AddNewsRequest;
 import com.example.eyeprotext.news.Request.LoadNewsRequest;
+import com.example.eyeprotext.news.response.LoadNewsResponse;
 import com.example.eyeprotext.news.response.NewsItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class NewsService {
                 .description(request.getDescripion())
                 .image(request.getImage())
                 .time(request.getTime())
+                .replyCount(0)
                 .build();
         newsRepository.save(news);
         return GeneralResponse.builder().message("發送成功").data("").result(0).build();
@@ -107,40 +109,53 @@ public class NewsService {
                 .description(concentrateRecord.getDescription())
                 .image(concentrateRecord.getImage())
                 .time(concentrateRecord.getEndTime())
+                .replyCount(0)
                 .build();
 
         newsRepository.save(news);
+
         return GeneralResponse.builder().message("發送成功").data("").result(0).build();
     }
 
-//    public GeneralResponse loadNews(LoadNewsRequest request) {
-//        Optional<Account> isExistAccount = accountRepository.findById(request.getAccountId());
-//        if (!isExistAccount.isPresent()) {
-//            return GeneralResponse.builder().message("找不到 AccountId").data("").result(0).build();
-//        }
-//
-//        List<UUID> targetAccountList = new ArrayList<>();
-//        List<NewsItem> targetNewsItem = new ArrayList<>();
-//
-//        Account account = isExistAccount.get();
-//        for(int i = 0;i < account.getFriendList().size();i++) {
-//            Optional<Account> isExistFriendAccount = accountRepository.findById(account.getFriendList().get(i));
-//            if (!isExistFriendAccount.isPresent()) {
-//                return GeneralResponse.builder().message("找不到 FriendAccountId").data("").result(0).build();
-//            }
-//
-//            Account friendAccount = isExistFriendAccount.get();
-//            targetAccountList.add(friendAccount.getAccountId());
-//        }
-//
-//        for(int i = 0;i < targetAccountList.size();i++) {
-//            Optional<Account> isExistFriendAccount = accountRepository.findById(account.getFriendList().get(i));
-//            if (!isExistFriendAccount.isPresent()) {
-//                return GeneralResponse.builder().message("找不到 FriendAccountId").data("").result(0).build();
-//            }
-//
-//            Account friendAccount = isExistFriendAccount.get();
-//            targetAccountList.add(friendAccount.getAccountId());
-//        }
-//    }  建到這裡
+    public GeneralResponse loadNews(LoadNewsRequest request) {
+        Optional<Account> isExistAccount = accountRepository.findById(request.getAccountId());
+        if (!isExistAccount.isPresent()) {
+            return GeneralResponse.builder().message("找不到 AccountId").data(LoadNewsResponse.builder().build()).result(0).build();
+        }
+        List<NewsItem> targetNewsItem = new ArrayList<>();
+
+        Account account = isExistAccount.get();
+        List<UUID> targetAccountList = account.getFriendList();
+        targetAccountList.add(request.getAccountId());
+        for(int i = 0;i < targetAccountList.size();i++) {
+            Optional<Account> isExistFriendAccount = accountRepository.findById(targetAccountList.get(i));
+            if (!isExistFriendAccount.isPresent()) {
+                return GeneralResponse.builder().message("找不到 FriendAccountId").data(LoadNewsResponse.builder().build()).result(0).build();
+            }
+
+            Account friendAccount = isExistFriendAccount.get();
+            List<News> tragetNewsList = newsRepository.findNewsBySendAccountId(friendAccount.getAccountId());
+
+            for(int a = 0; a < tragetNewsList.size(); a++) {
+                Optional<News> isExistNews = newsRepository.findById(tragetNewsList.get(a).getNewsId());
+                if (!isExistNews.isPresent()) {
+                    return GeneralResponse.builder().message("找不到 NewsId").data(LoadNewsResponse.builder().build()).result(0).build();
+                }
+                News targetNew = isExistNews.get();
+                targetNewsItem.add(NewsItem.builder()
+                        .NewsPicture(targetNew.getImage())
+                        .newsId(targetNew.getNewsId())
+                        .description(targetNew.getDescription())
+                        .sendAccountId(targetNew.getSendAccountId())
+                        .title(targetNew.getTitle())
+                        .sendAccountImage(friendAccount.getImage())
+                        .sendAccountName(friendAccount.getName())
+                        .time(targetNew.getTime())
+                        .replyCount(targetNew.getReplyCount())
+                        .build());
+            }
+        }
+        LoadNewsResponse response = LoadNewsResponse.builder().newsItems(targetNewsItem).build();
+        return GeneralResponse.builder().message("已搜尋所有的 News").data(response).result(0).build();
+    }
 }

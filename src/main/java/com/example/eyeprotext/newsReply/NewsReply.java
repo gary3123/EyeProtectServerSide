@@ -1,4 +1,4 @@
-package com.example.eyeprotext.news;
+package com.example.eyeprotext.newsReply;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -14,22 +13,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "news")
-public class News {
+@Table(name = "newsReply")
+public class NewsReply {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID replyId;
+
     private UUID newsId;
 
     private UUID sendAccountId;
 
-    private String title;
-
-    @Column(name = "image", length = 5000000)
-    private String image;
-
-    private String description;
+    private String message;
 
     private String time;
-
-    private Integer replyCount;
 }

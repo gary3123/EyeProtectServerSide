@@ -17,4 +17,6 @@ public class NewsItem {
     private String title;
     private String description;
     private String NewsPicture;
+    private String time;
+    private Integer replyCount;
 }

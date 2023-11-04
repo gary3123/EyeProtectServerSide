@@ -1,4 +1,4 @@
-package com.example.eyeprotext.news.Request;
+package com.example.eyeprotext.newsReply.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +11,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoadNewsRequest {
-    private UUID accountId;
+public class EditNewsReplyRequest {
+    private UUID replyId;
+    private String message;
 }
