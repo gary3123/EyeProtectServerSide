@@ -36,4 +36,9 @@ public class NewsController {
     public GeneralResponse loadNews(@RequestBody LoadNewsRequest request) {
         return newsService.loadNews(request);
     }
+
+    @PostMapping(path = "/loadOnePersonNews")
+    public GeneralResponse loadOnePersonNews(@RequestBody LoadNewsRequest request) {
+        return newsService.loadOnePersonNews(request);
+    }
 }

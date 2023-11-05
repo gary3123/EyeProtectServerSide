@@ -158,4 +158,36 @@ public class NewsService {
         LoadNewsResponse response = LoadNewsResponse.builder().newsItems(targetNewsItem).build();
         return GeneralResponse.builder().message("已搜尋所有的 News").data(response).result(0).build();
     }
+
+    public GeneralResponse loadOnePersonNews(LoadNewsRequest request) {
+        Optional<Account> isExistAccount = accountRepository.findById(request.getAccountId());
+        if (!isExistAccount.isPresent()) {
+            return GeneralResponse.builder().message("找不到 AccountId").data(LoadNewsResponse.builder().build()).result(0).build();
+        }
+        Account account = isExistAccount.get();
+
+        List<NewsItem> targetNewsItem = new ArrayList<>();
+        List<News> tragetNewsList = newsRepository.findNewsBySendAccountId(account.getAccountId());
+
+        for(int i = 0; i < tragetNewsList.size(); i++) {
+            Optional<News> isExistNews = newsRepository.findById(tragetNewsList.get(i).getNewsId());
+            if (!isExistNews.isPresent()) {
+                return GeneralResponse.builder().message("找不到 NewsId").data(LoadNewsResponse.builder().build()).result(0).build();
+            }
+            News targetNew = isExistNews.get();
+            targetNewsItem.add(NewsItem.builder()
+                    .NewsPicture(targetNew.getImage())
+                    .newsId(targetNew.getNewsId())
+                    .description(targetNew.getDescription())
+                    .sendAccountId(targetNew.getSendAccountId())
+                    .title(targetNew.getTitle())
+                    .sendAccountImage(account.getImage())
+                    .sendAccountName(account.getName())
+                    .time(targetNew.getTime())
+                    .replyCount(targetNew.getReplyCount())
+                    .build());
+        }
+        LoadNewsResponse response = LoadNewsResponse.builder().newsItems(targetNewsItem).build();
+        return GeneralResponse.builder().message("已搜尋所有的 News").data(response).result(0).build();
+    }
 }
