@@ -1,10 +1,7 @@
 package com.example.eyeprotext.concentrateRecord;
 
 import com.example.eyeprotext.GeneralResponse;
-import com.example.eyeprotext.concentrateRecord.request.UploadAlongRecordImageRequest;
-import com.example.eyeprotext.concentrateRecord.request.UploadMtipleRecordImageRequest;
-import com.example.eyeprotext.concentrateRecord.request.UseInviteRoomIdAndAccountIdTofindConcentrateRecordIdRequest;
-import com.example.eyeprotext.concentrateRecord.request.completeMutipleConcentrateRequest;
+import com.example.eyeprotext.concentrateRecord.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -59,5 +56,15 @@ public class ConcentrateRecordController {
     @PostMapping(path = "/useInviteRoomIdAndAccountIdTofindConcentrateRecordId")
     public GeneralResponse useInviteRoomIdAndAccountIdTofindConcentrateRecordId(@RequestBody UseInviteRoomIdAndAccountIdTofindConcentrateRecordIdRequest request) {
         return concentrateRecordService.useInviteRoomIdAndAccountIdTofindConcentrateRecordId(request);
+    }
+
+    @PostMapping(path = "/findSelfConcentrateRecord")
+    public GeneralResponse findSelfConcentrateRecord(@RequestBody FindSelfConcentrateRecordRequest request) {
+        return concentrateRecordService.findSelfConcentrateRecord(request);
+    }
+
+    @PostMapping(path = "/findConcentrateRecordByRecordId")
+    public GeneralResponse findConcentrateRecordByRecordId(@RequestBody ConcentrateRecord record) {
+        return concentrateRecordService.findConcentrateRecordByRecordId(record);
     }
 }

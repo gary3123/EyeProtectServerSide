@@ -4,11 +4,11 @@ import com.example.eyeprotext.GeneralResponse;
 import com.example.eyeprotext.account.Account;
 import com.example.eyeprotext.account.AccountRepository;
 import com.example.eyeprotext.account.FriendNameAndImage;
-import com.example.eyeprotext.concentrateRecord.request.UploadAlongRecordImageRequest;
-import com.example.eyeprotext.concentrateRecord.request.UploadMtipleRecordImageRequest;
-import com.example.eyeprotext.concentrateRecord.request.UseInviteRoomIdAndAccountIdTofindConcentrateRecordIdRequest;
-import com.example.eyeprotext.concentrateRecord.request.completeMutipleConcentrateRequest;
+import com.example.eyeprotext.concentrateRecord.request.*;
 import com.example.eyeprotext.concentrateRecord.response.FindByInviteRoomIdForConcentrateAndRestTimeResponse;
+import com.example.eyeprotext.concentrateRecord.response.FindConcentrateRecordByRecordIdResponse;
+import com.example.eyeprotext.concentrateRecord.response.FindSelfConcentrateRecordResponse;
+import com.example.eyeprotext.concentrateRecord.response.SelfConcentrateRecordItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -148,5 +148,63 @@ public class ConcentrateRecordService {
 
         ConcentrateRecord concentrateRecord = isExistConcentrateRecord.get();
         return GeneralResponse.builder().message("查詢成功").data(concentrateRecord.getRecordId()).result(0).build();
+    }
+
+    public GeneralResponse findSelfConcentrateRecord(FindSelfConcentrateRecordRequest request) {
+        Optional<Account> isExistAccountId = accountRepository.findById(request.getAccountId());
+        FindSelfConcentrateRecordResponse targetResponse = FindSelfConcentrateRecordResponse.builder().concentrateRecordList(new ArrayList<SelfConcentrateRecordItem>()).build();
+
+        if (!isExistAccountId.isPresent()) {
+            return GeneralResponse.builder().message("找不到 AccountId").data(targetResponse).result(0).build();
+        }
+
+        List<ConcentrateRecord> isExistConcentrateRecordList = concentrateRecordRepository.findConcentrateRecordByAccountId(isExistAccountId.get().getAccountId());
+        if (isExistConcentrateRecordList.isEmpty()) {
+            return GeneralResponse.builder().message("ConcentrateRecord 是空的").data(targetResponse).result(0).build();
+        }
+
+        for(int i = 0;i < isExistConcentrateRecordList.size(); i++) {
+            List<String> friensNameList = new ArrayList<String>();
+            for(int a = 0;a < isExistConcentrateRecordList.get(i).getWithFriends().size(); a++ ) {
+                Optional<Account> isExistFriendAccountId = accountRepository.findById(isExistConcentrateRecordList.get(i).getWithFriends().get(a));
+                if (!isExistFriendAccountId.isPresent()) {
+                    return GeneralResponse.builder().message("找不到 FriendAccountId").data(targetResponse).result(0).build();
+                }
+                friensNameList.add(isExistFriendAccountId.get().getName());
+            }
+
+            Optional<Account> isExistHostAccountId = accountRepository.findById(isExistConcentrateRecordList.get(i).getHostAccountId());
+            if (!isExistHostAccountId.isPresent()) {
+                return GeneralResponse.builder().message("找不到 HostAccountId").data(targetResponse).result(0).build();
+            }
+                SelfConcentrateRecordItem targetConcentrateRecordItem = SelfConcentrateRecordItem.builder()
+                        .recordId(isExistConcentrateRecordList.get(i).getRecordId())
+                        .endTime(isExistConcentrateRecordList.get(i).getEndTime())
+                        .withFriends(friensNameList)
+                        .concentrateTime(isExistConcentrateRecordList.get(i).getConcentrateTime())
+                        .hostAccountId(isExistConcentrateRecordList.get(i).getAccountId())
+                        .hostName(isExistHostAccountId.get().getName())
+                        .isFinished(isExistConcentrateRecordList.get(i).getIsFinished())
+                        .startTime(isExistConcentrateRecordList.get(i).getStartTime())
+                        .accountId(isExistConcentrateRecordList.get(i).getAccountId())
+                        .restTime(isExistConcentrateRecordList.get(i).getRestTime())
+                        .build();
+                targetResponse.getConcentrateRecordList().add(targetConcentrateRecordItem);
+        }
+        return GeneralResponse.builder().message("找到 ConcentrateRecord 了").data(targetResponse).result(0).build();
+    }
+
+    public GeneralResponse findConcentrateRecordByRecordId(ConcentrateRecord record) {
+        Optional<ConcentrateRecord> isExistConcentrateRecord = concentrateRecordRepository.findById(record.getRecordId());
+        if (isExistConcentrateRecord.isEmpty()) {
+            return GeneralResponse.builder().message("沒有此紀錄").data("").result(0).build();
+        }
+        ConcentrateRecord tergetConcentrate = isExistConcentrateRecord.get();
+
+        FindConcentrateRecordByRecordIdResponse targetResponse = FindConcentrateRecordByRecordIdResponse.builder()
+                .picture(tergetConcentrate.getImage())
+                .description(tergetConcentrate.getDescription())
+                .build();
+        return GeneralResponse.builder().message("找到 ConcentrateRecord 了").data(targetResponse).result(0).build();
     }
 }

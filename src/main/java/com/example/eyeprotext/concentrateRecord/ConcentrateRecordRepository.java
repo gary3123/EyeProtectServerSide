@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface ConcentrateRecordRepository extends JpaRepository<ConcentrateRecord, UUID> {
     @Query("SELECT a FROM ConcentrateRecord a WHERE a.accountId = ?1")
-    Optional<ConcentrateRecord> findConcentrateRecordByAccountId(String accountId);
+    List<ConcentrateRecord> findConcentrateRecordByAccountId(UUID accountId);
 
     @Query("SELECT a FROM ConcentrateRecord a WHERE a.inviteRoomId = ?1")
     List<ConcentrateRecord> findConcentrateRecordByInviteRoomId(UUID inviteRoomId);
