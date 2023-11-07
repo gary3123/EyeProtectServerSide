@@ -207,6 +207,7 @@ public class InviteConcentrateRoomService {
                     .restTime(startMutipleConcentrateRequest.getRestTime())
                     .withFriends(new ArrayList<>(friendList)) // 使用新的 friendList
                     .image("未上傳")
+                    .endTime("沒有完成")
                     .description("")
                     .build();
             concentrateRecordRepository.save(concentrateRecord);
@@ -228,6 +229,7 @@ public class InviteConcentrateRoomService {
                 .restTime(startMutipleConcentrateRequest.getRestTime())
                 .withFriends(hostFriendList)
                 .image("未上傳")
+                .endTime("沒有完成")
                 .description("")
                 .build();
         concentrateRecordRepository.save(hostConcentrateRecord);

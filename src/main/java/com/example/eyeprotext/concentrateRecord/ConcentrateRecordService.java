@@ -56,6 +56,7 @@ public class ConcentrateRecordService {
                 .restTime(record.getRestTime())
                 .isFinished(false)
                 .image("未上傳")
+                .endTime("沒有完成")
                 .description("")
                 .build();
         concentrateRecordRepository.save(addConcentrateRecord);
@@ -71,7 +72,6 @@ public class ConcentrateRecordService {
 
         ConcentrateRecord targetRecord = concentrateRecordRepository.findById(record.getRecordId()).orElseThrow();
         targetRecord.setIsFinished(false);
-        targetRecord.setEndTime(record.getEndTime());
         concentrateRecordRepository.save(targetRecord);
         return GeneralResponse.builder().message("已更新紀錄").data("").result(0).build();
     }
