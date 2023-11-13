@@ -19,5 +19,8 @@ public interface ConcentrateRecordRepository extends JpaRepository<ConcentrateRe
 
     @Query("SELECT a FROM ConcentrateRecord a WHERE a.inviteRoomId = ?1 AND a.accountId = ?2")
     Optional<ConcentrateRecord> findConcentrateRecordByInviteRoomIdAndAccountId(UUID inviteRoomId, UUID accountId);
+
+    @Query("SELECT a FROM ConcentrateRecord a WHERE a.accountId = ?1 AND a.endTime LIKE %?2%")
+    List<ConcentrateRecord> findConcentrateRecordByAccountIdAndDate(UUID accountId, String date);
 }
 
