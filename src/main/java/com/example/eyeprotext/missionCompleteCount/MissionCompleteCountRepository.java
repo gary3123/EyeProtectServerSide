@@ -17,5 +17,5 @@ public interface MissionCompleteCountRepository extends JpaRepository<MissionCom
     List<MissionCompleteCount> findMissionCompleteCountByAccountIdAndDate(UUID accountId, String date);
 
     @Query("SELECT a FROM MissionCompleteCount a WHERE a.accountId = ?1 AND a.missionID = ?2 AND a.date LIKE %?3%")
-    Optional<MissionCompleteCount> findMissionCompleteCountByAccountIdAndMissionIdAndDate(UUID accountId, UUID missionId, String date);
+    List<MissionCompleteCount> findMissionCompleteCountByAccountIdAndMissionIdAndDate(UUID accountId, UUID missionId, String date);
 }
